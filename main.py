@@ -46,14 +46,13 @@ class Scanner:
     def __init__(self, uuid, country):
         pass
 
-    def queue_scan()
+    def queue_scan():
         pass
 
     
 @app.post("/api/v1/scan")
-def create_scan(url:str,visibility="public":str | None = None):
+def create_scan(url:str,visibility:str | None = "public"):
     # return {"item_id": item_id, "q": q}
-
     # do stuff
     return {
             "uuid":123,
