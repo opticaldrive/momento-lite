@@ -1,6 +1,14 @@
 from fastapi import FastAPI, staticfiles
+
+from database import SessionDep, create_db_and_tables
+
 import uuid
 app = FastAPI()
+
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
+
 
 
 @app.get("/")
