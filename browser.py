@@ -1,63 +1,47 @@
 import uuid
-
-node={"ws_endpoint":"ws://localhost:3301/", "tasks":[], "browser": None},
-
-
-queue = ["https://google.com", "https://github.com", "https://hackclub.com", "https://aops.com", "https://duck.ai", "https://wikipedia.org"]
-
+import asyncio
+from pathlib import Path
 from playwright.async_api import async_playwright
 
+QUEUE = [
+    "https://google.com",
+    "https://github.com",
+    "https://hackclub.com",
+    "https://aops.com",
+    "https://duck.ai",
+    "https://wikipedia.org",
+]
+ENDPOINT = "ws://localhost:3301/"
 
-async def run_scan_task(node, url:str):
-    async with async_playwright() as p:
-        browser = await p.webkit.connect(ws_endpoint="ws://localhost:3301/")
-        screenshot = await return_screenshot(url)
-        filepath = str(uuid.uuid4)+".png"
-        save_image(screenshot, filepath)
+SCREENSHOT_DIR = Path(__file__).resolve().parent / "screenshots"
+SCREENSHOT_DIR.mkdir(exist_ok=True)
 
-async def return_screenshot(browser, url:str):
-    async with async_playwright() as p:
-        # browser = await p.webkit.connect(ws_endpoint="ws://localhost:3301/")
-        context = await browser.new_context()
-        page = await context.new_page()
+async def save_image(image_data: bytes, filepath: Path):
+    filepath.write_bytes(image_data)
 
-        await page.goto(url)
+async def run_scan_task(browser, url: str):
+    context = await browser.new_context()
+    page = await context.new_page()
+    try:
+        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
         screenshot_data = await page.screenshot()
-        # page.screenshot(path="example.png")
+        filepath = SCREENSHOT_DIR / f"{uuid.uuid4()}.png"
+        await save_image(screenshot_data, filepath)
+        print(f"saved screenshot: {filepath}")
+    finally:
         await context.close()
-        await browser.close()
-        return screenshot_data
-
-async def save_image(image_data, filepath:str):
-    with open(filepath, "wb") as image:
-        image.write(image_data)
 
 async def main():
     async with async_playwright() as p:
-        browser = await p.webkit.connect(ws_endpoint=node["ws_endpoint"])  
-        for task in queue:
-            run_scan_task()
+        browser = await p.chromium.connect(ws_endpoint=ENDPOINT, timeout=10000)
+        print("connected to podman browser server")
 
-import asyncio
-asyncio.run(main())
-# connect to all nodes
+        for url in QUEUE:
+            print(f"running task: {url}")
+            await run_scan_task(browser, url)
 
+        await browser.close()
+        print("browser connection closed")
 
-
-
-
-# make list/que
-# assign task to each free node
-# waitlist when all nodes busy? or can it be stacked since async? idk assume not
-# return the images when its done ofc. some metadata asw?
-# focus on screenshots for now and distribution. we'll be connecting directly to the websocket, later this would be upgraded
-# save screenshots in this directory , [project directory]/screenshots/thescreenshot
-# check resource usage with benchmarks!! ram/cpu etc via activity monitor
-# can a single podman container run multile of the screenshot scans at the same time?
-# how many scans per minute with 3? we'll see
-
-# TODO: for the same node, the same podman running the ws playwright server, don't tear down the browser connection. For each scan a new context must be made.
-# Ideally benchmark it both ways
-
-
-
+if __name__ == "__main__":
+    asyncio.run(main())
