@@ -12,6 +12,9 @@ def read_root():
 def read_item(item_id: int, q: str | None = None):
     return {"item_id": item_id, "q": q}
 
+@app.post("/scan")
+def make_scanny():
+    return {"Hello": "World"}
 
 
 class Scan:
