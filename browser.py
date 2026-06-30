@@ -1,7 +1,11 @@
+# vibeslop that actually connects to the podman, so i'll take that part and remove the others
+# no node system
+
 import uuid
 import asyncio
 from pathlib import Path
 from playwright.async_api import async_playwright
+
 
 QUEUE = [
     "https://google.com",

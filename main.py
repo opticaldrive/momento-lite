@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, staticfiles
 import uuid
 app = FastAPI()
 
@@ -14,8 +14,15 @@ def read_item(item_id: int, q: str | None = None):
 
 @app.post("/scan")
 def make_scanny():
+    # create scan in db
+    # start scan async/background, they will poll
+    # fnish scan
+    # write some results to db idk what results
+    # point img at screenshoty
+
     return {"Hello": "World"}
 
+app.mount("/screenshots", staticfiles.StaticFiles(directory="screenshots"), name="screenshots")
 
 class Scan:
     """
