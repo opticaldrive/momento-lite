@@ -7,6 +7,8 @@ from pathlib import Path
 from playwright.async_api import async_playwright
 
 
+
+
 QUEUE = [
     "https://google.com",
     "https://github.com",

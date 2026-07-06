@@ -6,12 +6,12 @@ from database import SessionDep
 router = APIRouter(prefix="/api/v1", tags=["scanning"])
 
 
-@router.post("/scan")
+@router.post("/scan") # todo: get url
 def scan(session: SessionDep):
     return None
 
 
-@router.get("/result")
+@router.get("/result") # todo get uuid
 def scan(session: SessionDep, scan_id): # scanid is uuidv4 iirc
     return None
 
