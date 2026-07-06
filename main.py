@@ -1,9 +1,11 @@
 from fastapi import FastAPI, staticfiles
 
 from database import SessionDep, create_db_and_tables
-
+from routes.scanning import router as scanning_router
 import uuid
 app = FastAPI()
+
+app.include_router(scanning_router.router)
 
 @app.on_event("startup")
 def on_startup():

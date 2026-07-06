@@ -14,6 +14,8 @@ QUEUE = [
     "https://aops.com",
     "https://duck.ai",
     "https://wikipedia.org",
+    "https://reddit.com",
+    "https://phish.directory",
 ]
 ENDPOINT = "ws://localhost:3301/"
 
